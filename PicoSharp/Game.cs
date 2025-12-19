@@ -6,13 +6,17 @@ namespace PicoSharp
 {
     public abstract class Game
     {
-        private const int GameWidth = 320;
-        private const int GameHeight = 240;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
         private const int Scale = 2;
-        private const int WindowWidth = GameWidth * Scale;
-        private const int WindowHeight = GameHeight * Scale;
 
         private RenderTexture2D _target;
+        
+        protected Game(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
         
         // API for the user to override
         public virtual void Init() { }
@@ -22,11 +26,11 @@ namespace PicoSharp
         public void Run()
         {
             Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
-            Raylib.InitWindow(WindowWidth, WindowHeight, "PicoSharp");
+            Raylib.InitWindow(Width * Scale, Height * Scale, "PicoSharp");
             Raylib.SetTargetFPS(60);
 
             // Load resources for the system here if needed
-            _target = Raylib.LoadRenderTexture(GameWidth, GameHeight);
+            _target = Raylib.LoadRenderTexture(Width, Height);
             
             // Texture filtering point for pixel perfect look
             Raylib.SetTextureFilter(_target.Texture, TextureFilter.Point);
@@ -53,8 +57,8 @@ namespace PicoSharp
                 // Draw the texture scaled heavily
                 // Source rect is the texture itself (note: OpenGL coordinates, so height might need to be flipped if upside down, 
                 // but Raylib usually handles this. If it's upside down, use -GameHeight for height)
-                Rectangle sourceRec = new Rectangle(0, 0, GameWidth, -GameHeight);
-                Rectangle destRec = new Rectangle(0, 0, WindowWidth, WindowHeight);
+                Rectangle sourceRec = new Rectangle(0, 0, Width, -Height);
+                Rectangle destRec = new Rectangle(0, 0, Width * Scale, Height * Scale);
                 Vector2 origin = new Vector2(0, 0);
                 
                 Raylib.DrawTexturePro(_target.Texture, sourceRec, destRec, origin, 0.0f, Raylib_cs.Color.White);

@@ -14,15 +14,19 @@ namespace MyGame
     {
         private int _x = 160;
         private int _y = 120;
-        private int _radius = 10;
-        private Sprite _sprite;
+        // private int _radius = 10; // Unused
+        private Sprite _sprite = null!;
 
-        private Ball[] balls;
+        private Ball[] balls = null!;
         private Random _rng = new Random();
         
-        private SpriteSheet _characterSheet;
+        private SpriteSheet _characterSheet = null!;
         private int _frameIndex = 0;
         private int _frameTimer = 0;
+
+        public MyGame(int width, int height) : base(width, height)
+        {
+        }
 
         public override void Init()
         {
@@ -32,11 +36,11 @@ namespace MyGame
             balls = new Ball[10];
 
             // 10 balls
-            for(int i = 0 ; i < 10; i++) {
+            for(int i = 0 ; i < balls.Length; i++) {
                 balls[i] = new Ball();
                 // A random position
-                balls[i].x = _rng.Next(0, 320);
-                balls[i].y = _rng.Next(0, 240);
+                balls[i].x = _rng.Next(0, Width);
+                balls[i].y = _rng.Next(0, Height);
                 // A random velocity
                 balls[i].xv = _rng.Next(-2, 3); // -2 to 2
                 balls[i].yv = _rng.Next(-2, 3);
@@ -61,12 +65,19 @@ namespace MyGame
             }
 
             // Update balls
-            for(int i = 0 ; i < 10; i++) {
+            for(int i = 0 ; i < balls.Length; i++) {
+
+                // gravity
+                balls[i].yv += 0.03f;
+                // bounce off edges
+                if (balls[i].x < 0 || balls[i].x > Width) balls[i].xv = -balls[i].xv;
+                if (balls[i].y  > Height) {
+                    balls[i].yv  = balls[i].yv * -0.9f;
+                }
+
                 balls[i].x += balls[i].xv;
                 balls[i].y += balls[i].yv;
-                // bounce of edges
-                if (balls[i].x < 0 || balls[i].x > 320) balls[i].xv = -balls[i].xv;
-                if (balls[i].y < 0 || balls[i].y > 240) balls[i].yv = -balls[i].yv;
+
             }
         }
 
@@ -82,7 +93,7 @@ namespace MyGame
             DrawRect(10, 10, 100, 100, Color.Red);
             DrawCircle(128, 128, 50, Color.Lavender);
             
-            DrawLine(0, 0, 320, 240, Color.Green);
+            DrawLine(0, 0, Width, Height, Color.Green);
             
             // simple visual test for GetPixel: draw a dot where the center pixel color is detected
             var c = GetPixel(160, 120);
@@ -91,9 +102,10 @@ namespace MyGame
             DrawText("HELLO PICOSHARP", 10, 10, 20, Color.White);
 
             // draw the balls
-            for(int i = 0; i < 10; i++){
+            for(int i = 0; i < balls.Length; i++){
                 // just a 8px circle
                 DrawCircle((int)balls[i].x, (int)balls[i].y, 4, Color.White);
+                //DrawSprite(_characterSheet.Get(0), balls[i].x, balls[i].y);
             }
         }
     }
