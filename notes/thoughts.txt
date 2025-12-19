@@ -1,0 +1,77 @@
+Let's build something fun.
+I'm calling it PicoSharp
+
+My son is learning C#. I think it'd be good for him to code a simple game from scratch without the complexities of Unity etc.
+Think pico8 but  in c#.  
+But not the art or music tools, just from a programming point of view.
+No collission detection etc. Here are the features we need and some thoughts on API which you can adapt based on what is feasable with C#.
+
+3 functions like pico8. Init, Update, Draw
+Update and Draw called 60 times a second and do what they do in pico 8.
+Init is run before the first Update.
+
+in init you can initialise sprites
+maybe
+Sprite guy = LoadSprite("guy.png")
+Sound bang = Sound.load("bang.wag")
+
+In update
+PlaySound(bang)
+
+And in draw
+DrawSprite(guy, x, y)
+
+
+Drawing functions we need.
+
+DrawSprite
+DrawCircle
+DrawFilledCircle
+DrawRect
+DrawFilledRect
+SetPixel
+GetPixel (get the Color e.g. Color.red of a coordinate in the buffer))
+Clear(color) // clear the buffer with color. note that we don't clear each frame by default so cyou can 
+draw cumulatively
+
+Let's have a simple set of 16 colours based on the Pico
+See notes/palette.txt
+
+Use those color values and names.
+
+So API something like 
+Background(Color.red)
+
+Rendering
+Everything you draw will be to a back buffer and after Draw is called, that can get swapped to the screen.
+The game should load in a window.
+Let's start with a rendering resolution of 320x240 and scale that up 4 for the window.
+No smoothing, keep all the pixels sharp.
+constant 60fps
+
+When drawinng circles, no anti aliasing. like pico8.
+when drawing anything, snap to integer positions. pixel perfect everything like pico8
+
+
+
+Think about how to handle game state. ideally we'd just like simple variables defined in the game class.
+Pseudocode ish example of api:
+
+class Game extends PicoSharp.Game
+
+  int x = 5
+  int y = 6
+  
+  void Init() {
+    //Load stuff, set initial game state
+  }
+  void Update() {} // update game state
+  void Draw() {} // draw the game
+  
+  }
+
+So this is the ideal level of simplicity we want so the user can focus on just their game with no boilerplate.
+
+
+Note that i'm not trying to emulate all the restrictions of Pico 8.
+
